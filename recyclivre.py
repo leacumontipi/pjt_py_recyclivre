@@ -46,3 +46,17 @@ def init_db_command():
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
+ 
+#show the user profile for that user
+@app.route('/user/<username>')
+def show_user_profile(karima):
+    return f'User {escape(username)}'
+
+@app.route('/post/<int:post_id>')
+def show_post(post_id):
+    #show the post with the given id, the id is an integer
+    return f'Post {post_id}' 
+# Comportement de redirection
+@app.route('/projects/')
+def projects():
+    return 'The project page'       
