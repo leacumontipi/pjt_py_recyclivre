@@ -1,10 +1,12 @@
 import sqlite3
 import click
 from flask import Flask, flash, current_app, g, render_template, request, session, redirect, url_for
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from pathlib import Path
 
 app = Flask(__name__)
+
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 #INIT DATABASE BEFORE PROJECT
 #Read db file and transform db data as object
@@ -22,6 +24,9 @@ if(not db_file.exists()):
     db = get_db()
     db.executescript(Path('db.sql').read_text())
 
+#à utiliser pour insert
+#print(generate_password_hash("admin"))
+
 #MAIN APP
 @app.route("/")
 def index():
@@ -32,7 +37,7 @@ def index():
 def login_get():
     return render_template('login.html')
 
-#LOGIN POST, take data from login's form, check if username and password is correct
+#LOGIN POST, take data from login's form, check if username and password is correct from db
 @app.post('/login')
 def login_post():
     username = request.form['username']
@@ -40,7 +45,7 @@ def login_post():
     db = get_db()
     error = None
     user = db.execute(
-        'SELECT * FROM user WHERE username = ?', (username)
+        'SELECT rowid, password FROM user WHERE username = ?', (username,)
     ).fetchone()
 
     if user is None:
@@ -50,7 +55,7 @@ def login_post():
 
     if error is None:
         session.clear()
-        session['user_id'] = user['id']
+        session['user_id'] = user['rowid']
         return redirect(url_for('index'))
 
     flash(error)
