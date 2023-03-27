@@ -84,14 +84,14 @@ def register():
         if error is None:
             try:
                 db.execute(
-                    "INSERT INTO user (username, password, first_name, last_name) VALUES (?, ?)",
+                    "INSERT INTO user (username, password, first_name, last_name) VALUES (?, ?, ?, ?)",
                     (username, generate_password_hash(password), first_name, last_name),
                 )
                 db.commit()
             except db.IntegrityError:
                 error = f"User {username} is already registered."
             else:
-                return redirect(url_for("auth.login"))
+                return redirect(url_for("index"))
 
         flash(error)
     return render_template('register.html')
