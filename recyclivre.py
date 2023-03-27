@@ -1,8 +1,12 @@
 import sqlite3
-
 import click
-from flask import current_app, g
+from flask import Flask, current_app, g
 
+app = Flask(__name__)
+
+@app.route("/")
+def hello_world():
+    return "<p>Hello, World!</p>"
 
 def get_db():
     if 'db' not in g:
@@ -34,3 +38,8 @@ def init_db_command():
     """Clear the existing data and create new tables."""
     init_db()
     click.echo('Initialized the database.')
+
+
+def init_app(app):
+    app.teardown_appcontext(close_db)
+    app.cli.add_command(init_db_command)
