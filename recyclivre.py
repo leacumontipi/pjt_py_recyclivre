@@ -32,6 +32,10 @@ if(not db_file.exists()):
 def index():
     return render_template('index.html')
 
+@app.route("/success")
+def success():
+    return render_template('success.html')
+
 #LOGIN GET, render login template
 @app.get('/login')
 def login_get():
@@ -58,7 +62,7 @@ def login_post():
     if error is None:
         session.clear()
         session['user_id'] = user['rowid']
-        return redirect(url_for('index'))
+        return redirect(url_for('success'))
 
     flash(error)
 
@@ -93,15 +97,13 @@ def register():
             except db.IntegrityError:
                 error = f"User {username} is already registered."
             else:
-                return redirect(url_for("index"))
+                return redirect(url_for("login_get"))
 
         flash(error)
     return render_template('register.html')
 
 
 #INIT DATABSE
-
-
 def close_db(e=None):
     db = g.pop('db', None)
 
