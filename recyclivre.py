@@ -67,6 +67,7 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('index'))
 
+# User registration
 @app.route('/register', methods=('GET', 'POST'))
 def register():
     if request.method == 'POST':
@@ -96,9 +97,17 @@ def register():
         flash(error)
     return render_template('register.html')
 
+# Get all books from user
+@app.route('/books')
+def get_books():
+    db = get_db()
+    books = db.execute(
+        "SELECT * FROM book INNER JOIN user ON book.user_id = user.rowid WHERE user.rowid = ?", (session['user_id'],)
+    ).fetchall()
+    db.commit()
+    return render_template('list-books.html', books=books)
 
 #INIT DATABSE
-
 
 def close_db(e=None):
     db = g.pop('db', None)
