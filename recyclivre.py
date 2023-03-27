@@ -69,6 +69,35 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('index'))
 
+@app.route('/register', methods=('GET', 'POST'))
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        db = get_db()
+        error = None
+        if not username:
+            error = 'Username is required.'
+        elif not password:
+            error = 'Password is required.'
+
+        if error is None:
+            try:
+                db.execute(
+                    "INSERT INTO user (username, password, first_name, last_name) VALUES (?, ?, ?, ?)",
+                    (username, generate_password_hash(password), first_name, last_name),
+                )
+                db.commit()
+            except db.IntegrityError:
+                error = f"User {username} is already registered."
+            else:
+                return redirect(url_for("index"))
+
+        flash(error)
+    return render_template('register.html')
+
 
 #INIT DATABSE
 
