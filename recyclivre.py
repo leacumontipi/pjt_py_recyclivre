@@ -121,3 +121,27 @@ def init_db():
 
     with current_app.open_resource('db.sql') as f:
         db.executescript(f.read().decode('utf8'))
+# CRUD 
+## create Livre par un admin
+@app.route("/createLivre",methods = ["POST","GET"])
+def createLivre():
+   
+    if request.method == "POST":
+
+        title = request.form["title"]
+        author= request.form["author"]
+        price =request.form["price"]
+        summary= request.form["summary"]
+        user_id= session['user_id']
+        edition= request.form["edition"]
+        db = get_db()
+        db.execute("INSERT INTO book(title,author, price, summary,edition,user_id) values(?,?,?,?,?,?)", (title,author,price,summary,edition,user_id) )
+        db.commit()
+        return redirect()
+      
+    return render_template("create_book.html")
+# update Livre
+#delete Livre
+
+
+
