@@ -17,7 +17,7 @@ CREATE TABLE book
     edition VARCHAR(255),
     summary TEXT(255),
     price DECIMAL(4,2),
-    FOREIGN KEY (id) REFERENCES user(id)
+    FOREIGN KEY (id) REFERENCES user(id),
 )
 
 
