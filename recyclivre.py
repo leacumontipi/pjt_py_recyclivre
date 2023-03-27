@@ -4,10 +4,13 @@ from flask import Flask, current_app, g
 
 app = Flask(__name__)
 
+#MAIN APP
 @app.route("/")
 def hello_world():
     return "<p>Hello, World!</p>"
 
+
+#INIT DATABSE
 def get_db():
     if 'db' not in g:
         g.db = sqlite3.connect(
