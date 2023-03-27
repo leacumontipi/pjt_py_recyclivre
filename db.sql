@@ -18,7 +18,7 @@ CREATE TABLE book
     FOREIGN KEY (id) REFERENCES user(id),
 );
 
-INSERT INTO user VALUES ("Jean", "Livre", "admin", "admin");
+INSERT INTO user VALUES ("Jean", "Livre", "admin", "$2y$10$funVa6t4GAAHlMb0kONG3OQCj86YOu9fRf0ZLejWkfgfYRGpfhGqO");
 INSERT INTO book VALUES ("Alice au pays des merveilles", "Lewis Carroll", "Soleil", "Un matin, Alice décide de suivre un mystérieux Lapin Blanc jusque dans son terrier. Chemin faisant, elle fait des rencontres surprenantes : une Reine de Coeur qui veut couper la tête de tout le monde, un Chapelier fou avec lequel elle prend le thé, ou encore un Chat qui arbore un sourire jusqu'aux oreilles", 29.90, 1);
 INSERT INTO book VALUES ("Salem", "Stephen King", "Le livre de Poche", "Le Maine, 1970. Ben Mears revient à Salem et s'installe à Marsten House, inhabitée depuis la mort tragique de ses propriétaires, vingt-cinq ans auparavant.", 9.90, 1);
 
