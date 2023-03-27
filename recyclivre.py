@@ -1,7 +1,7 @@
 import sqlite3
 import click
 from flask import Flask, flash, current_app, g, render_template, request, session, redirect, url_for
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from pathlib import Path
 
 app = Flask(__name__)
@@ -40,7 +40,7 @@ def login_post():
     db = get_db()
     error = None
     user = db.execute(
-        'SELECT * FROM user WHERE username = ?', (username)
+        'SELECT * FROM user WHERE username = ?', (username,)
     ).fetchone()
 
     if user is None:
@@ -61,6 +61,35 @@ def logout():
     # remove the username from the session if it's there
     session.pop('username', None)
     return redirect(url_for('index'))
+
+@app.route('/register', methods=('GET', 'POST'))
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        db = get_db()
+        error = None
+        if not username:
+            error = 'Username is required.'
+        elif not password:
+            error = 'Password is required.'
+
+        if error is None:
+            try:
+                db.execute(
+                    "INSERT INTO user (username, password, first_name, last_name) VALUES (?, ?)",
+                    (username, generate_password_hash(password), first_name, last_name),
+                )
+                db.commit()
+            except db.IntegrityError:
+                error = f"User {username} is already registered."
+            else:
+                return redirect(url_for("auth.login"))
+
+        flash(error)
+    return render_template('register.html')
 
 
 #INIT DATABSE
