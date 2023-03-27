@@ -44,6 +44,7 @@ def login_post():
     password = request.form['password']
     db = get_db()
     error = None
+    #Need to specify selecting password and user's id because select * doesn't take user's id
     user = db.execute(
         'SELECT rowid, password FROM user WHERE username = ?', (username,)
     ).fetchone()
@@ -53,6 +54,7 @@ def login_post():
     elif not check_password_hash(user['password'], password):
         error = 'Incorrect password.'
 
+    #if there's no error, redirect to the index page
     if error is None:
         session.clear()
         session['user_id'] = user['rowid']
