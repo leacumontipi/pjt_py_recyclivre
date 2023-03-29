@@ -32,6 +32,10 @@ if(not db_file.exists()):
 def index():
     return render_template('index.html')
 
+@app.route("/success")
+def success():
+    return render_template('success.html')
+
 #LOGIN GET, render login template
 @app.get('/login')
 def login_get():
@@ -44,6 +48,7 @@ def login_post():
     password = request.form['password']
     db = get_db()
     error = None
+    #Need to specify selecting password and user's id because select * doesn't take user's id
     user = db.execute(
         'SELECT rowid, password FROM user WHERE username = ?', (username,)
     ).fetchone()
@@ -53,10 +58,11 @@ def login_post():
     elif not check_password_hash(user['password'], password):
         error = 'Incorrect password.'
 
+    #if there's no error, redirect to the index page
     if error is None:
         session.clear()
         session['user_id'] = user['rowid']
-        return redirect(url_for('index'))
+        return redirect(url_for('success'))
 
     flash(error)
 
@@ -92,7 +98,7 @@ def register():
             except db.IntegrityError:
                 error = f"User {username} is already registered."
             else:
-                return redirect(url_for("index"))
+                return redirect(url_for("login_get"))
 
         flash(error)
     return render_template('register.html')
@@ -108,7 +114,6 @@ def get_books():
     return render_template('list-books.html', books=books)
 
 #INIT DATABSE
-
 def close_db(e=None):
     db = g.pop('db', None)
 
@@ -124,7 +129,7 @@ def init_db():
 # CRUD 
 ## create Livre par un admin
 @app.route("/createBook",methods = ["POST","GET"])
-def createLivre():
+def createBook():
    
     if request.method == "POST":
 
