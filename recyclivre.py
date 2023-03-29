@@ -108,10 +108,10 @@ def register():
 def get_books():
     db = get_db()
     books = db.execute(
-        "SELECT * FROM book INNER JOIN user ON book.user_id = user.rowid WHERE user.rowid = ?", (session['user_id'],)
+        "SELECT book.rowid, * FROM book INNER JOIN user ON book.user_id = user.rowid WHERE user.rowid = ?", (session['user_id'],)
     ).fetchall()
     db.commit()
-    return render_template('list-books.html', books=books)
+    return render_template('list_books.html', books=books)
 
 #INIT DATABSE
 def close_db(e=None):
@@ -126,13 +126,12 @@ def init_db():
 
     with current_app.open_resource('db.sql') as f:
         db.executescript(f.read().decode('utf8'))
-# CRUD 
-## create Livre par un admin
+
+# CRUD
+##Create book for an admin
 @app.route("/createBook",methods = ["POST","GET"])
 def createBook():
-   
     if request.method == "POST":
-
         title = request.form["title"]
         author= request.form["author"]
         price =request.form["price"]
@@ -142,47 +141,46 @@ def createBook():
         db = get_db()
         db.execute("INSERT INTO book(title,author, price, summary,edition,user_id) values(?,?,?,?,?,?)", (title,author,price,summary,edition,user_id) )
         db.commit()
-        return redirect(url_for("index.html"))
-    
+        return redirect(url_for("get_books"))
     return render_template("create_book.html")
-# update Livre
+
+# get book's information by its id
 def get_book(id):
     book = get_db().execute(
-        'SELECT book.rowid, title,author, edition,summary , price'
-        ' FROM book  JOIN user  ON book.user_id = user.rowid'
+        'SELECT book.rowid, title, author, edition, summary, price'
+        ' FROM book JOIN user  ON book.user_id = user.rowid'
         ' WHERE book.rowid = ?',
         (id,)
     ).fetchone()
     return book
 
+# update the book's information
 @app.route('/update/<int:id>', methods=['GET','POST'])
 def update(id):
     book = get_book(id)
     if request.method =='POST':
         title = request.form['title']
-        author= request.form ['author']
-        edition =request.form ['edition']
-        summary =request.form ['summary']
-        price = request.form ['price']
+        author = request.form['author']
+        edition = request.form['edition']
+        summary = request.form['summary']
+        price = request.form['price']
+        error = None
+
         if not title:
             error = 'Title is required.'
-            if error is notNone:
-                flash(error)
-            else:
-                db = get_db
-                db.execute(
-                    'UPDATE book SET title = ?, author = ?, edition = ?, summary =?, price = ?'
-                    'WHERE book.rowid = ?',
-                    (title,author,edition, summary, price)
-                    )
-                db.commit()
-                return redirect(url_for('index.html'))
-    return render_template('update.html', book=book)
+        if error is not None:
+            flash(error)
+        else:
+            db = get_db()
+            db.execute('UPDATE book SET title = ?, author = ?, edition = ?, summary =?, price = ? WHERE rowid = ?', (title,author,edition, summary, price, id))
+            db.commit()
+            return redirect(url_for('get_books'))
+    return render_template('update_book.html', book=book)
 
 #delete Livre
 @app.route('/delete/<int:id>', methods=['GET','POST'])
 def delete(id):
-    get_post(id)
+    get_book(id)
     db = get_db()
     db.execute('DELETE FROM book WHERE book.user_id= ?', (id,))
     db.commit()

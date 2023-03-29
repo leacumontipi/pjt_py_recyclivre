@@ -4,5 +4,6 @@
     <p>Auteur : {{ book['author'] }}. Edition : {{ book['edition'] }}</p>
     <p>Prix : {{ book['price'] }}</p>
     <p>Résumé : {{ book['summary'] }}</p>
+    <p><a href="/update/{{book['rowid']}}">Modifier</a></p>
 </div>
 {% endfor %}
