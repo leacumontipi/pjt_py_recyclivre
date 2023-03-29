@@ -85,7 +85,7 @@ def init_db():
         db.executescript(f.read().decode('utf8'))
 # CRUD 
 ## create Livre par un admin
-@app.route("/createLivre",methods = ["POST","GET"])
+@app.route("/createBook",methods = ["POST","GET"])
 def createLivre():
    
     if request.method == "POST":
@@ -99,11 +99,56 @@ def createLivre():
         db = get_db()
         db.execute("INSERT INTO book(title,author, price, summary,edition,user_id) values(?,?,?,?,?,?)", (title,author,price,summary,edition,user_id) )
         db.commit()
-        return redirect()
-      
+        return redirect(url_for("index.html"))
+    
     return render_template("create_book.html")
 # update Livre
+def get_book(id):
+    book = get_db().execute(
+        'SELECT book.rowid, title,author, edition,summary , price'
+        ' FROM book  JOIN user  ON book.user_id = user.rowid'
+        ' WHERE book.rowid = ?',
+        (id,)
+    ).fetchone()
+    return book
+
+@app.route('/update/<int:id>', methods=['GET','POST'])
+def update(id):
+    book = get_book(id)
+    if request.method =='POST':
+        title = request.form['title']
+        author= request.form ['author']
+        edition =request.form ['edition']
+        summary =request.form ['summary']
+        price = request.form ['price']
+        if not title:
+            error = 'Title is required.'
+            if error is notNone:
+                flash(error)
+            else:
+                db = get_db
+                db.execute(
+                    'UPDATE book SET title = ?, author = ?, edition = ?, summary =?, price = ?'
+                    'WHERE book.rowid = ?',
+                    (title,author,edition, summary, price)
+                    )
+                db.commit()
+                return redirect(url_for('index.html'))
+    return render_template('update.html', book=book)
+
 #delete Livre
+@app.route('/delete/<int:id>', methods=['GET','POST'])
+def delete(id):
+    get_post(id)
+    db = get_db()
+    db.execute('DELETE FROM book WHERE book.user_id= ?', (id,))
+    db.commit()
+    return redirect(url_for('index.html'))
+
+
+
+
+
 
 
 
