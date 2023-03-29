@@ -133,9 +133,10 @@ def createBook():
         db.execute("INSERT INTO book(title,author, price, summary,edition,user_id) values(?,?,?,?,?,?)", (title,author,price,summary,edition,user_id) )
         db.commit()
         return redirect()
+      
     return render_template("create_book.html")
-# update Book
-#delete Book
+# update Livre
+#delete Livre
 
 
 
