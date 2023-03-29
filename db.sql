@@ -9,7 +9,6 @@ CREATE TABLE user
 CREATE TABLE book
 (
     user_id INT NOT NULL,
-
     title VARCHAR(255),
     author VARCHAR(255),
     edition VARCHAR(255),

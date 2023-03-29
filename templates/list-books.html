@@ -1,0 +1,8 @@
+{% for book in books %}
+<div>
+    <h1>{{ book['title'] }}</h1>
+    <p>Auteur : {{ book['author'] }}. Edition : {{ book['edition'] }}</p>
+    <p>Prix : {{ book['price'] }}</p>
+    <p>Résumé : {{ book['summary'] }}</p>
+</div>
+{% endfor %}
