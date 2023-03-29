@@ -118,8 +118,8 @@ def init_db():
         db.executescript(f.read().decode('utf8'))
 # CRUD 
 ## create Livre par un admin
-@app.route("/createLivre",methods = ["POST","GET"])
-def createLivre():
+@app.route("/createBook",methods = ["POST","GET"])
+def createBook():
    
     if request.method == "POST":
 
@@ -133,10 +133,9 @@ def createLivre():
         db.execute("INSERT INTO book(title,author, price, summary,edition,user_id) values(?,?,?,?,?,?)", (title,author,price,summary,edition,user_id) )
         db.commit()
         return redirect()
-      
     return render_template("create_book.html")
-# update Livre
-#delete Livre
+# update Book
+#delete Book
 
 
 
