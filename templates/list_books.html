@@ -1,9 +1,27 @@
-{% for book in books %}
-<div>
-    <h1>{{ book['title'] }}</h1>
-    <p>Auteur : {{ book['author'] }}. Edition : {{ book['edition'] }}</p>
-    <p>Prix : {{ book['price'] }}</p>
-    <p>Résumé : {{ book['summary'] }}</p>
-    <p><a href="/update/{{book['rowid']}}">Modifier</a></p>
-</div>
-{% endfor %}
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<title>Page Title</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="">
+
+<body>
+    {% for book in books %}
+    <div>
+        <h3>{{ book['title'] }}</h3>
+        <p>Auteur : {{ book['author'] }}</p>
+        <p>Edition : {{ book['edition'] }}</p>
+        <p>Prix : {{ book['price'] }}</p>
+        <p>Résumé : {{ book['summary'] }}</p>
+    </div>
+
+    <a href="/book/{{book['rowid']}}">Voir le détail</a>
+    <a href="/update/{{book['rowid']}}">Editer</a>
+    <a href="/delete/{{book['rowid']}}">Supprimer</a>
+    <hr>
+    {% endfor %}
+
+
+</body>
+
+</html>

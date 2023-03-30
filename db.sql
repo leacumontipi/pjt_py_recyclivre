@@ -1,3 +1,5 @@
+PRAGMA encoding = "UTF-8";
+
 CREATE TABLE user
 (
     first_name VARCHAR(255),
@@ -15,6 +17,13 @@ CREATE TABLE book
     summary TEXT,
     price DECIMAL(4,2),
     FOREIGN KEY (user_id) REFERENCES user(rowid)
+);
+
+CREATE TABLE like_book(
+    book_id INT NOT NULL,
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user(rowid),
+    FOREIGN KEY (book_id) REFERENCES book(rowid)
 );
 
 INSERT INTO user VALUES ("Jean", "Livre", "admin", "pbkdf2:sha256:260000$z2RnKLODzFUmDmyP$241dc532c6575508b346a19971fcd9503f43d5524a688356218c193421f1ee75");

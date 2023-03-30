@@ -24,7 +24,7 @@ if(not db_file.exists()):
     db = get_db()
     db.executescript(Path('db.sql').read_text())
 
-#à utiliser pour insert
+#to use insert
 #print(generate_password_hash("admin"))
 
 #MAIN APP
@@ -57,14 +57,13 @@ def login_post():
         error = 'Incorrect username.'
     elif not check_password_hash(user['password'], password):
         error = 'Incorrect password.'
-
+    if error is not None:
+        flash(error)
     #if there's no error, redirect to the index page
     if error is None:
         session.clear()
         session['user_id'] = user['rowid']
         return redirect(url_for('success'))
-
-    flash(error)
 
 #LOGOUT
 @app.route('/logout')
@@ -103,15 +102,26 @@ def register():
         flash(error)
     return render_template('register.html')
 
-# Get all books from user
+# Get all books from logged user
 @app.route('/books')
 def get_books():
     db = get_db()
     books = db.execute(
-        "SELECT book.rowid, * FROM book INNER JOIN user ON book.user_id = user.rowid WHERE user.rowid = ?", (session['user_id'],)
+        "SELECT book.rowid, * FROM book JOIN user ON book.user_id = user.rowid WHERE user.rowid = ?", (session['user_id'],)
     ).fetchall()
     db.commit()
     return render_template('list_books.html', books=books)
+
+#Get every books
+@app.route('/all_books')
+def get_all_books():
+    db = get_db()
+    books = db.execute(
+        'SELECT book.rowid, book.*, user.username as username, COUNT(like_book.book_id) AS liked '
+        'FROM book LEFT JOIN like_book ON book.rowid = like_book.book_id INNER JOIN user ON user.rowid = book.user_id GROUP BY book.rowid'
+    ).fetchall()
+    db.commit()
+    return render_template('all_books.html', books=books)
 
 #INIT DATABSE
 def close_db(e=None):
@@ -133,11 +143,11 @@ def init_db():
 def createBook():
     if request.method == "POST":
         title = request.form["title"]
-        author= request.form["author"]
-        price =request.form["price"]
-        summary= request.form["summary"]
-        user_id= session['user_id']
-        edition= request.form["edition"]
+        author = request.form["author"]
+        price = request.form["price"]
+        summary = request.form["summary"]
+        user_id = session['user_id']
+        edition = request.form["edition"]
         db = get_db()
         db.execute("INSERT INTO book(title,author, price, summary,edition,user_id) values(?,?,?,?,?,?)", (title,author,price,summary,edition,user_id) )
         db.commit()
@@ -147,14 +157,23 @@ def createBook():
 # get book's information by its id
 def get_book(id):
     book = get_db().execute(
-        'SELECT book.rowid, title, author, edition, summary, price'
-        ' FROM book JOIN user  ON book.user_id = user.rowid'
+        'SELECT book.rowid, book.*, user.rowid as userid, user.username as username, COUNT(like_book.book_id) AS liked '
+        ' FROM book JOIN user ON book.user_id = user.rowid'
+        ' JOIN like_book ON book.rowid = like_book.book_id'
         ' WHERE book.rowid = ?',
         (id,)
     ).fetchone()
     return book
 
-# update the book's information
+
+# readonly book's details
+@app.route('/book/<int:id>', methods=['GET'])
+def view_one_book(id):
+    book = get_book(id)
+    return render_template('view_book.html', book=book)
+
+
+# Update the book's information
 @app.route('/update/<int:id>', methods=['GET','POST'])
 def update(id):
     book = get_book(id)
@@ -177,15 +196,36 @@ def update(id):
             return redirect(url_for('get_books'))
     return render_template('update_book.html', book=book)
 
-#delete Livre
-@app.route('/delete/<int:id>', methods=['GET','POST'])
+#Delete a book
+@app.route('/delete/<int:id>', methods=('GET',))
 def delete(id):
-    get_book(id)
     db = get_db()
-    db.execute('DELETE FROM book WHERE book.user_id= ?', (id,))
+    db.execute('DELETE FROM book WHERE rowid = ?', (id,))
     db.commit()
-    return redirect(url_for('index.html'))
+    return redirect(url_for('get_books'))
 
+#Like function
+#Count how many times the user already liked the book
+def get_liked_book(userid, bookid):
+    liked_book = get_db().execute(
+        'SELECT COUNT(like_book.user_id) AS nb_already_liked FROM like_book WHERE like_book.user_id = ? AND like_book.book_id = ?',
+        (userid, bookid)
+    ).fetchone()
+    return liked_book
+
+#Check if the current user already liked the post
+@app.route('/like/<int:id>', methods=('POST',))
+def like(id):
+    user_id = session['user_id']
+    book = get_liked_book(user_id, id)
+
+    #If the user never liked the actual post, then he can like,
+    #howervise the book's likes won't update
+    if book['nb_already_liked'] == 0:
+        db = get_db()
+        db.execute("INSERT INTO like_book(book_id,user_id) values(?,?)", (id,user_id) )
+        db.commit()
+    return redirect(url_for('get_all_books'))
 
 
 
