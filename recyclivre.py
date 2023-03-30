@@ -24,7 +24,7 @@ if(not db_file.exists()):
     db = get_db()
     db.executescript(Path('db.sql').read_text())
 
-#à utiliser pour insert
+#to use insert
 #print(generate_password_hash("admin"))
 
 #MAIN APP
@@ -97,7 +97,7 @@ def register():
         flash(error)
     return render_template('register.html')
 
-# Get all books from user
+# Get all books from logged user
 @app.route('/books')
 def get_books():
     db = get_db()
@@ -108,7 +108,6 @@ def get_books():
     return render_template('list-books.html', books=books)
 
 #INIT DATABSE
-
 def close_db(e=None):
     db = g.pop('db', None)
 
@@ -139,7 +138,7 @@ def createLivre():
         db.commit()
         return redirect()
       
-    return render_template("create_book.html")
+    return render_template("list-books.html")
 # update Livre
 #delete Livre
 
