@@ -1,3 +1,5 @@
+PRAGMA encoding = "UTF-8";
+
 CREATE TABLE user
 (
     first_name VARCHAR(255),

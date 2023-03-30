@@ -154,6 +154,13 @@ def get_book(id):
     ).fetchone()
     return book
 
+# readonly book's details
+@app.route('/book/<int:id>', methods=['GET'])
+def view_one_book(id):
+    book = get_book(id)
+    return render_template('view_book.html', book=book)
+
+
 # update the book's information
 @app.route('/update/<int:id>', methods=['GET','POST'])
 def update(id):
@@ -176,6 +183,7 @@ def update(id):
             db.commit()
             return redirect(url_for('get_books'))
     return render_template('update_book.html', book=book)
+
 
 #delete Livre
 @app.route('/delete/<int:id>', methods=['GET','POST'])
