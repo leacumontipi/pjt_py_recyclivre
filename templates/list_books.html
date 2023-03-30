@@ -1,19 +1,27 @@
-<h1>All of my books</h1>
-{% for book in books %}
-<div>
-    <h1>{{ book['title'] }}</h1>
-    <p>Auteur : {{ book['author'] }}. Edition : {{ book['edition'] }}</p>
-    <p>Prix : {{ book['price'] }}</p>
-    <p>Résumé : {{ book['summary'] }}</p>
-    <p>Posté par {{ book['username']}}</p>
-    <p>Nb de likes : {{book['liked']}} </p>
-    <p><a href="/update/{{book['rowid']}}">Modifier</a> / <a href="/delete/{{book['rowid']}}">Supprimer</a></p>
-</div>
-{% endfor %}
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<title>Page Title</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="">
 
-<hr>
+<body>
+    {% for book in books %}
+    <div>
+        <h3>{{ book['title'] }}</h3>
+        <p>Auteur : {{ book['author'] }}</p>
+        <p>Edition : {{ book['edition'] }}</p>
+        <p>Prix : {{ book['price'] }}</p>
+        <p>Résumé : {{ book['summary'] }}</p>
+    </div>
 
-<a href="/all_books">Every books</a>
-<a href="/createBook">Create a book</a>
-<a href="/books">My books</a>
-<a href="/logout">Log out</a>
+    <a href="/book/{{book['rowid']}}">Voir le détail</a>
+    <a href="/update/{{book['rowid']}}">Editer</a>
+    <a href="/delete/{{book['rowid']}}">Supprimer</a>
+    <hr>
+    {% endfor %}
+
+
+</body>
+
+</html>

@@ -24,7 +24,7 @@ if(not db_file.exists()):
     db = get_db()
     db.executescript(Path('db.sql').read_text())
 
-#à utiliser pour insert
+#to use insert
 #print(generate_password_hash("admin"))
 
 #MAIN APP
@@ -102,7 +102,7 @@ def register():
         flash(error)
     return render_template('register.html')
 
-#Get all books from user
+# Get all books from logged user
 @app.route('/books')
 def get_books():
     db = get_db()
@@ -165,15 +165,15 @@ def get_book(id):
     ).fetchone()
     return book
 
-#Count how many times the user already liked the book
-def get_liked_book(userid, bookid):
-    liked_book = get_db().execute(
-        'SELECT COUNT(like_book.user_id) AS nb_already_liked FROM like_book WHERE like_book.user_id = ? AND like_book.book_id = ?',
-        (userid, bookid)
-    ).fetchone()
-    return liked_book
 
-#Update the book's information
+# readonly book's details
+@app.route('/book/<int:id>', methods=['GET'])
+def view_one_book(id):
+    book = get_book(id)
+    return render_template('view_book.html', book=book)
+
+
+# Update the book's information
 @app.route('/update/<int:id>', methods=['GET','POST'])
 def update(id):
     book = get_book(id)
@@ -205,6 +205,14 @@ def delete(id):
     return redirect(url_for('get_books'))
 
 #Like function
+#Count how many times the user already liked the book
+def get_liked_book(userid, bookid):
+    liked_book = get_db().execute(
+        'SELECT COUNT(like_book.user_id) AS nb_already_liked FROM like_book WHERE like_book.user_id = ? AND like_book.book_id = ?',
+        (userid, bookid)
+    ).fetchone()
+    return liked_book
+
 #Check if the current user already liked the post
 @app.route('/like/<int:id>', methods=('POST',))
 def like(id):
