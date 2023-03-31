@@ -1,4 +1,4 @@
-<h1>Every books posted</h1>
+<h1>Tous les livres postés</h1>
 {% for book in books %}
 <div>
     <h1>{{ book['title'] }}</h1>
@@ -8,6 +8,7 @@
     <p>Posté par {{ book['username']}}</p>
     <p>Nb de likes : {{book['liked']}} </p>
     <p><form action="/like/{{book['rowid']}}" method="POST"><input type="text" name="liked" id="liked" value="{{book['liked']}}" hidden><button type="submit">Aimer</button></form></p>
+    <p><a href="/book/{{book['rowid']}}">Voir le détail</a></p>
 </div>
 {% endfor %}
 
